@@ -1,0 +1,4 @@
+agent-framework-azure-ai>=1.0.0b251111
+openai>=2.7.0
+python-dotenv>=1.0.0
+gradio>=4.0.0

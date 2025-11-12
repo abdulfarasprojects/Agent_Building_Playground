@@ -1,6 +1,5 @@
 # Environment variables
 .env
-MS Agent Framework/.env
 
 # Python
 __pycache__/
