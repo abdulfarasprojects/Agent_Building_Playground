@@ -1,0 +1,4 @@
+agent: shipping_coordinator_agent
+model: gemini-2.0-flash
+description: "Shipping coordinator agent that handles order approvals"
+instruction: "Coordinate shipping orders with automatic approval for small orders and human approval for large orders"

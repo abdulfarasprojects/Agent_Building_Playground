@@ -4,12 +4,13 @@ A comprehensive exploration of modern AI agent architectures, demonstrating mult
 
 ## 🎯 Project Overview
 
-This playground showcases two distinct AI agent implementations that demonstrate key concepts in agent development:
+This playground showcases three distinct AI agent implementations that demonstrate key concepts in agent development:
 
 1. **Currency Conversion Agent** (Google ADK) - Financial calculations with multi-agent delegation
-2. **Cooking Assistant Agent** (Microsoft Agent Framework) - Recipe generation with safety workflows
+2. **Shipping Coordinator Agent** (Google ADK) - Long-running operations with human approval workflows
+3. **Cooking Assistant Agent** (Microsoft Agent Framework) - Recipe generation with safety workflows
 
-Both agents integrate **Model Context Protocol (MCP)** servers for extended tool capabilities and demonstrate production-ready patterns for AI agent development.
+All agents integrate **Model Context Protocol (MCP)** servers for extended tool capabilities and demonstrate production-ready patterns for AI agent development.
 
 ## 🏗️ Core Concepts Demonstrated
 
@@ -100,9 +101,14 @@ instruction="You are a calculation agent. When given amount, rate, and fee_perce
 Agent_Building_Playground/
 ├── Google ADK/                    # Google ADK Implementation
 │   ├── agent.py                   # Currency conversion agent with MCP integration
-│   └── currency_agent/            # Alternative agent structure
+│   ├── currency_agent/            # Alternative agent structure
+│   │   ├── __init__.py
+│   │   └── agent.py
+│   └── shipping_agent/            # Shipping coordinator agent
 │       ├── __init__.py
-│       └── agent.py
+│       ├── agent.py               # Shipping agent with approval workflow
+│       ├── config.yaml            # Agent configuration
+│       └── README.md              # Shipping agent documentation
 ├── MS Agent Framework/            # Microsoft Agent Framework Implementation
 │   ├── cooking_agent.py          # Cooking assistant with safety workflows
 │   ├── ui.py                     # Web UI for the cooking agent
@@ -134,7 +140,32 @@ result = await agent.run(
 # Returns: Total amount after fees and conversion
 ```
 
-### 2. Cooking Assistant Agent (Microsoft Agent Framework)
+### 2. Shipping Coordinator Agent (Google ADK)
+
+**Purpose**: Long-running shipping coordination with human approval workflows.
+
+**Key Features**:
+- Auto-approval for small orders (≤5 containers)
+- Human approval required for large orders (>5 containers)
+- ToolContext integration for confirmation requests
+- Clear status updates and approval handling
+- Demonstrates pause → wait → resume pattern
+
+**Usage Example**:
+```bash
+cd "Google ADK"
+adk run shipping_agent
+```
+
+**Example Interaction**:
+```
+User: Please coordinate shipping for 8 containers
+Agent: [Requests confirmation: "Large shipping order detected: 8 containers. Do you approve this shipment?"]
+User: approve
+Agent: ✅ Approved shipping order for 8 containers. Order will be processed.
+```
+
+### 3. Cooking Assistant Agent (Microsoft Agent Framework)
 
 **Purpose**: Safe recipe generation with allergen awareness and nutritional information.
 
@@ -203,13 +234,14 @@ def sync_wrapper(async_func):
 
 This playground demonstrates:
 
-1. **Agent Design Patterns**: Multi-agent delegation, tool integration, safety workflows
+1. **Agent Design Patterns**: Multi-agent delegation, tool integration, safety workflows, approval workflows
 2. **Framework Comparison**: Google ADK vs Microsoft Agent Framework approaches
 3. **Protocol Integration**: MCP for extending agent capabilities
 4. **Safety Implementation**: Mandatory user confirmation for sensitive operations
-5. **Code Execution**: Using Python execution for mathematical accuracy
-6. **Async Programming**: Bridging async tools with sync frameworks
-7. **Model Selection**: Choosing appropriate models for different tasks
+5. **Long-running Operations**: Pause and resume patterns with human input
+6. **Code Execution**: Using Python execution for mathematical accuracy
+7. **Async Programming**: Bridging async tools with sync frameworks
+8. **Model Selection**: Choosing appropriate models for different tasks
 
 ## 🚀 Getting Started
 
@@ -221,12 +253,10 @@ This playground demonstrates:
 
 ### Running the Agents
 
-#### Cooking Assistant (MS Agent Framework)
+#### Shipping Coordinator (Google ADK)
 ```bash
-cd "MS Agent Framework"
-pip install -r requirements.txt
-# Set GITHUB_TOKEN in .env file
-python cooking_agent.py
+cd "Google ADK"
+adk run shipping_agent
 ```
 
 #### Currency Agent (Google ADK)
@@ -235,6 +265,8 @@ cd "Google ADK"
 # Configure Google ADK credentials
 python agent.py
 ```
+
+#### Cooking Assistant (MS Agent Framework)
 
 ## 📚 Further Reading
 
