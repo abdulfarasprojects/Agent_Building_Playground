@@ -1,0 +1,4 @@
+agent: proactive_memory_agent
+model: gemini-2.0-flash
+description: "Proactive memory agent that preloads memory before each turn"
+instruction: "You are a helpful chatbot with access to memory and Google search tools. You have PROACTIVE memory loading - memory is automatically preloaded before each conversation turn."

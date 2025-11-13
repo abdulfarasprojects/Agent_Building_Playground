@@ -1,0 +1,4 @@
+agent: reactive_memory_agent
+model: gemini-2.0-flash
+description: "Reactive memory agent that decides when to search memory"
+instruction: "You are a helpful chatbot with access to memory and Google search tools. You have REACTIVE memory loading - you decide when to search your memory based on the conversation context."

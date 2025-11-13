@@ -4,13 +4,15 @@ A comprehensive exploration of modern AI agent architectures, demonstrating mult
 
 ## 🎯 Project Overview
 
-This playground showcases five distinct AI agent implementations that demonstrate key concepts in agent development:
+This playground showcases seven distinct AI agent implementations that demonstrate key concepts in agent development:
 
 1. **Currency Conversion Agent** (Google ADK) - Financial calculations with multi-agent delegation
 2. **Shipping Coordinator Agent** (Google ADK) - Long-running operations with human approval workflows
 3. **Session Management Demo Agent** (Google ADK) - General chatbot with session management demonstration capabilities
 4. **Database Session Demo Agent** (Google ADK) - General chatbot with persistent database sessions and compaction ⚠️ **NEEDS INVESTIGATION**
-5. **Cooking Assistant Agent** (Microsoft Agent Framework) - Recipe generation with safety workflows
+5. **Reactive Memory Agent** (Google ADK) - Chatbot with reactive memory loading using load_memory tool
+6. **Proactive Memory Agent** (Google ADK) - Chatbot with proactive memory loading (preload before each turn)
+7. **Cooking Assistant Agent** (Microsoft Agent Framework) - Recipe generation with safety workflows
 
 All agents integrate **Model Context Protocol (MCP)** servers for extended tool capabilities and demonstrate production-ready patterns for AI agent development.
 
@@ -115,12 +117,22 @@ Agent_Building_Playground/
 │   │   ├── __init__.py
 │   │   ├── agent.py               # InMemorySessionService demonstration
 │   │   └── README.md              # Session management documentation
-│   └── database_session_agent/    # Database session demo
+│   ├── database_session_agent/    # Database session demo
+│   │   ├── __init__.py
+│   │   ├── agent.py               # DatabaseSessionService with compaction
+│   │   ├── run_agent.py           # Custom runner for database persistence
+│   │   ├── sessions.db            # SQLite database (created at runtime)
+│   │   └── README.md              # Database session documentation
+│   ├── memory_reactive_agent/     # Reactive memory loading demo
+│   │   ├── __init__.py
+│   │   ├── agent.py               # Reactive memory agent with load_memory tool
+│   │   ├── run_agent.py           # Runner demonstrating three-step memory process
+│   │   └── README.md              # Reactive memory documentation
+│   └── memory_proactive_agent/    # Proactive memory loading demo
 │       ├── __init__.py
-│       ├── agent.py               # DatabaseSessionService with compaction
-│       ├── run_agent.py           # Custom runner for database persistence
-│       ├── sessions.db            # SQLite database (created at runtime)
-│       └── README.md              # Database session documentation
+│       ├── agent.py               # Proactive memory agent with preload_memory
+│       ├── run_agent.py           # Runner with automatic memory preloading
+│       └── README.md              # Proactive memory documentation
 ├── MS Agent Framework/            # Microsoft Agent Framework Implementation
 │   ├── cooking_agent.py          # Cooking assistant with safety workflows
 │   ├── ui.py                     # Web UI for the cooking agent
@@ -243,7 +255,83 @@ User: How does compaction work?
 Agent: Event compaction manages memory by compressing old conversation events...
 ```
 
-### 5. Cooking Assistant Agent (Microsoft Agent Framework)
+### 5. Reactive Memory Agent (Google ADK)
+
+**Purpose**: General chatbot demonstrating reactive memory loading where the agent decides when to search memory.
+
+**Current Status**: ⚠️ Demonstrates memory integration setup but actual reactive memory functionality is broken due to function calling issues. Agent gets stuck in loops calling manual_memory_search repeatedly.
+
+**Key Features**:
+- Reactive memory loading using `load_memory` tool (intended but not working)
+- Agent decides when memory search is needed based on context (not implemented)
+- Manual memory search capabilities (simulated, doesn't actually search memory)
+- Google search integration for real-time information (working)
+- InMemoryMemoryService with keyword-based search (integrated but not used)
+- Comprehensive logging of memory operations (working)
+- Three-step memory integration process (Initialize → Ingest → Retrieve) (partially working)
+
+**Memory Process**:
+1. **Initialize**: Create InMemoryMemoryService and provide to Runner
+2. **Ingest**: Transfer session data to memory using `add_session_to_memory()`
+3. **Retrieve**: Agent uses `load_memory` tool when it determines search is helpful
+
+**Usage Example**:
+```bash
+cd "Google ADK/memory_reactive_agent"
+python run_agent.py
+```
+
+**Example Interactions** (intended behavior - currently not working):
+```
+User: What did we talk about earlier?
+Agent: [Intended: Uses load_memory tool to search conversation history]
+Agent: [Currently: Gets stuck in function calling loop]
+
+User: Search memory for "Python"
+Agent: [Intended: Uses manual_memory_search tool]
+Agent: [Currently: Calls manual_memory_search repeatedly without actual search]
+```
+
+### 6. Proactive Memory Agent (Google ADK)
+
+**Purpose**: General chatbot demonstrating proactive memory loading where memory is preloaded before each turn.
+
+**Current Status**: ⚠️ Demonstrates memory integration setup but actual proactive memory functionality is broken due to function calling issues. Agent gets stuck in loops calling manual_memory_search repeatedly.
+
+**Key Features**:
+- Proactive memory loading (memory preloaded before each conversation turn) (intended but not working)
+- Agent has immediate access to relevant historical context (not implemented)
+- Manual memory search capabilities (simulated, doesn't actually search memory)
+- Google search integration for real-time information (working)
+- InMemoryMemoryService with keyword-based search (integrated but not used)
+- Comprehensive logging of memory operations (working)
+- Automatic memory preloading before each agent response (not implemented)
+
+**Memory Process**:
+1. **Initialize**: Create InMemoryMemoryService and provide to Runner
+2. **Ingest**: Transfer session data to memory using `add_session_to_memory()`
+3. **Retrieve**: Memory automatically preloaded before each conversation turn
+
+**Usage Example**:
+```bash
+cd "Google ADK/memory_proactive_agent"
+python run_agent.py
+```
+
+**Example Interactions** (intended behavior - currently not working):
+```
+User: What did we talk about earlier?
+Agent: [Intended: Memory already preloaded] Based on our conversation history...
+Agent: [Currently: Gets stuck in function calling loop]
+
+User: Search memory for "JavaScript"
+Agent: [Intended: Uses manual_memory_search tool]
+Agent: [Currently: Calls manual_memory_search repeatedly without actual search]
+```
+
+**Key Difference** (intended vs current): Reactive agent should search memory when it decides it's needed, while proactive agent should always have memory loaded before responding. Currently both agents exhibit the same broken behavior.
+
+### 7. Cooking Assistant Agent (Microsoft Agent Framework)
 
 **Purpose**: Safe recipe generation with allergen awareness and nutritional information.
 
@@ -314,16 +402,17 @@ This playground demonstrates:
 
 1. **Agent Design Patterns**: Multi-agent delegation, tool integration, safety workflows, approval workflows
 2. **Session Management**: In-memory and persistent session storage, event compaction, context management, real-time session inspection
-3. **Database Persistence**: SQLite-based session storage with automatic compaction and inspection capabilities ⚠️ **NEEDS INVESTIGATION**
-4. **General Chatbot Development**: Building versatile agents that handle multiple conversation types
-5. **Framework Comparison**: Google ADK vs Microsoft Agent Framework approaches
-6. **Protocol Integration**: MCP for extending agent capabilities
-7. **Safety Implementation**: Mandatory user confirmation for sensitive operations
-8. **Long-running Operations**: Pause and resume patterns with human input
-9. **Code Execution**: Using Python execution for mathematical accuracy
-10. **Async Programming**: Bridging async tools with sync frameworks
-11. **Model Selection**: Choosing appropriate models for different tasks
-12. **Dynamic Agent Behavior**: Switching between general chat and specialized demonstrations
+3. **Memory Integration**: Reactive vs proactive memory loading (partially implemented ⚠️), InMemoryMemoryService, three-step memory process (Initialize → Ingest → Retrieve), keyword-based search
+4. **Database Persistence**: SQLite-based session storage with automatic compaction and inspection capabilities ⚠️ **NEEDS INVESTIGATION**
+5. **General Chatbot Development**: Building versatile agents that handle multiple conversation types
+6. **Framework Comparison**: Google ADK vs Microsoft Agent Framework approaches
+7. **Protocol Integration**: MCP for extending agent capabilities
+8. **Safety Implementation**: Mandatory user confirmation for sensitive operations
+9. **Long-running Operations**: Pause and resume patterns with human input
+10. **Code Execution**: Using Python execution for mathematical accuracy
+11. **Async Programming**: Bridging async tools with sync frameworks
+12. **Model Selection**: Choosing appropriate models for different tasks
+13. **Dynamic Agent Behavior**: Switching between general chat and specialized demonstrations
 
 ## 🚀 Quick Start
 
@@ -346,7 +435,8 @@ This playground demonstrates:
    ```bash
    adk web "Google ADK"
    ```
-   Access at http://127.0.0.1:8000
+   Access at http://127.0.0.1:8000 - All agents including memory agents are now available in the web interface
+   **⚠️ Note**: Memory agents have function calling issues and do not work as expected
 
    **Note**: Database Session Demo Agent is currently not working properly and needs investigation.
 
@@ -381,7 +471,31 @@ adk web "Google ADK"  # Select from web UI dropdown
 cd "Google ADK/database_session_agent"
 python run_agent.py
 ```
-**Note**: ⚠️ Currently not working properly - needs investigation. Requires Google AI API key. Set `GOOGLE_API_KEY` environment variable.
+   **Note**: ⚠️ Currently not working properly - needs investigation. Requires Google AI API key. Set `GOOGLE_API_KEY` environment variable.
+
+   **Note**: ⚠️ Memory agents have function calling issues and do not demonstrate proper memory functionality. They show the integration setup but get stuck in loops and don't actually retrieve or use memory.##### Reactive Memory Agent (Google ADK)
+```bash
+cd "Google ADK/memory_reactive_agent"
+python run_agent.py
+# OR via ADK Web UI at http://127.0.0.1:8000
+```
+**⚠️ CURRENT STATUS: NOT WORKING AS EXPECTED**
+- **Issues**: Function calling loops, no actual memory retrieval, agent gets stuck repeatedly calling manual_memory_search
+- **Features**: Reactive memory loading (intended), manual search, simulated Google search integration, comprehensive logging
+- **Requirements**: Set `GOOGLE_API_KEY` environment variable
+- **Note**: Agent demonstrates memory integration setup but actual memory functionality is broken due to function calling issues
+
+##### Proactive Memory Agent (Google ADK)
+```bash
+cd "Google ADK/memory_proactive_agent"
+python run_agent.py
+# OR via ADK Web UI at http://127.0.0.1:8000
+```
+**⚠️ CURRENT STATUS: NOT WORKING AS EXPECTED**
+- **Issues**: Function calling loops, no actual memory retrieval, agent gets stuck repeatedly calling manual_memory_search
+- **Features**: Proactive memory loading (intended), manual search, simulated Google search integration, automatic preloading
+- **Requirements**: Set `GOOGLE_API_KEY` environment variable
+- **Note**: Agent demonstrates memory integration setup but actual memory functionality is broken due to function calling issues
 
 ##### Cooking Assistant (MS Agent Framework)
 ```bash
@@ -396,7 +510,29 @@ python cooking_agent.py
 python ui.py
 ```
 
-## 📚 Further Reading
+## � Known Issues & Future Improvements
+
+### Memory Agents Issues
+The memory agents currently demonstrate the integration setup but have several critical issues:
+
+1. **Function Calling Loops**: Agents get stuck repeatedly calling the same tools due to Google ADK function calling compatibility issues
+2. **No Actual Memory Retrieval**: The `manual_memory_search` function returns static messages instead of actually querying the InMemoryMemoryService
+3. **Missing Reactive/Proactive Logic**: Both agents behave identically - neither implements the intended reactive vs proactive memory loading patterns
+4. **Memory Service Not Used**: The integrated InMemoryMemoryService is not actually utilized for memory operations
+
+### Required Fixes
+To make these agents work properly:
+
+1. **Implement Actual Memory Search**: Replace simulated memory functions with real calls to `memory_service.search_memory()`
+2. **Fix Function Calling**: Resolve Google ADK function calling issues or implement alternative tool integration
+3. **Reactive Agent**: Implement logic for agent to decide when memory search is needed
+4. **Proactive Agent**: Implement memory preloading before each conversation turn
+5. **Memory Context Integration**: Properly pass memory results to the agent for context-aware responses
+
+### Database Session Agent
+⚠️ Currently not working properly - needs investigation.
+
+## �📚 Further Reading
 
 - [Google ADK Documentation](https://developers.google.com/adk)
 - [Microsoft Agent Framework](https://learn.microsoft.com/en-us/azure/ai-services/agent/)
