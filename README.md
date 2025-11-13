@@ -4,11 +4,13 @@ A comprehensive exploration of modern AI agent architectures, demonstrating mult
 
 ## 🎯 Project Overview
 
-This playground showcases three distinct AI agent implementations that demonstrate key concepts in agent development:
+This playground showcases five distinct AI agent implementations that demonstrate key concepts in agent development:
 
 1. **Currency Conversion Agent** (Google ADK) - Financial calculations with multi-agent delegation
 2. **Shipping Coordinator Agent** (Google ADK) - Long-running operations with human approval workflows
-3. **Cooking Assistant Agent** (Microsoft Agent Framework) - Recipe generation with safety workflows
+3. **Session Management Demo Agent** (Google ADK) - General chatbot with session management demonstration capabilities
+4. **Database Session Demo Agent** (Google ADK) - General chatbot with persistent database sessions and compaction ⚠️ **NEEDS INVESTIGATION**
+5. **Cooking Assistant Agent** (Microsoft Agent Framework) - Recipe generation with safety workflows
 
 All agents integrate **Model Context Protocol (MCP)** servers for extended tool capabilities and demonstrate production-ready patterns for AI agent development.
 
@@ -104,15 +106,27 @@ Agent_Building_Playground/
 │   ├── currency_agent/            # Alternative agent structure
 │   │   ├── __init__.py
 │   │   └── agent.py
-│   └── shipping_agent/            # Shipping coordinator agent
+│   ├── shipping_agent/            # Shipping coordinator agent
+│   │   ├── __init__.py
+│   │   ├── agent.py               # Shipping agent with approval workflow
+│   │   ├── config.yaml            # Agent configuration
+│   │   └── README.md              # Shipping agent documentation
+│   ├── session_demo_agent/        # Session management demo
+│   │   ├── __init__.py
+│   │   ├── agent.py               # InMemorySessionService demonstration
+│   │   └── README.md              # Session management documentation
+│   └── database_session_agent/    # Database session demo
 │       ├── __init__.py
-│       ├── agent.py               # Shipping agent with approval workflow
-│       ├── config.yaml            # Agent configuration
-│       └── README.md              # Shipping agent documentation
+│       ├── agent.py               # DatabaseSessionService with compaction
+│       ├── run_agent.py           # Custom runner for database persistence
+│       ├── sessions.db            # SQLite database (created at runtime)
+│       └── README.md              # Database session documentation
 ├── MS Agent Framework/            # Microsoft Agent Framework Implementation
 │   ├── cooking_agent.py          # Cooking assistant with safety workflows
 │   ├── ui.py                     # Web UI for the cooking agent
 │   ├── requirements.txt          # Python dependencies
+│   ├── .env                      # Environment variables
+│   ├── .gitignore               # Git ignore rules
 │   └── README.md                 # Agent-specific documentation
 └── README.md                     # This project-level README
 ```
@@ -165,7 +179,71 @@ User: approve
 Agent: ✅ Approved shipping order for 8 containers. Order will be processed.
 ```
 
-### 3. Cooking Assistant Agent (Microsoft Agent Framework)
+### 3. Session Management Demo Agent (Google ADK)
+
+**Purpose**: General chatbot that demonstrates session management concepts with InMemorySessionService.
+
+**Key Features**:
+- General conversation capabilities on any topic
+- Session management demonstration when requested
+- Session as conversation notebook 📓 with events as entries 📝
+- SessionService as storage layer 🗄️ and Runner as orchestration layer 🤖
+- In-memory session storage (data lost on restart)
+- Tools to display current session information and explain concepts
+
+**Usage Example**:
+```bash
+cd "Google ADK"
+adk web "Google ADK"  # Access via web UI
+# or
+adk run session_demo_agent
+```
+
+**Example Interactions**:
+```
+User: What's the weather like today?
+Agent: I don't have access to real-time weather data, but I can help you with general information...
+
+User: Show me how sessions work
+Agent: Sessions in Google ADK are like conversation notebooks 📓 that store your chat history...
+```
+
+### 4. Database Session Demo Agent (Google ADK)
+
+**Purpose**: General chatbot that demonstrates persistent sessions with DatabaseSessionService and event compaction.
+
+**Key Features**:
+- General conversation capabilities on any topic
+- Database session demonstration with compaction when requested
+- SQLite database persistence (survives restarts) ⚠️ **NEEDS INVESTIGATION**
+- Event compaction with sliding window compression
+- Database inspection capabilities
+- Tools to display session data, compaction status, and explain concepts
+
+**Usage Example**:
+```bash
+cd "Google ADK"
+adk web "Google ADK"  # Access via web UI
+# or
+adk run database_session_agent
+```
+
+**Database Note**: The `sessions.db` file is automatically created when running the database agent. It persists all conversation sessions and can be inspected with SQLite tools.
+
+**Status**: ⚠️ **Database persistence infrastructure is implemented but not working properly - needs investigation**
+
+**Known Issues**: The database agent creates the SQLite database file and session tables correctly, but the agent may fail to respond properly when interacting through the web interface or direct runner. The underlying DatabaseSessionService and compaction features are implemented, but the agent execution may encounter errors during LLM API calls or message processing.
+
+**Example Interactions**:
+```
+User: Tell me about machine learning
+Agent: Machine learning is a subset of AI that enables systems to learn from data...
+
+User: How does compaction work?
+Agent: Event compaction manages memory by compressing old conversation events...
+```
+
+### 5. Cooking Assistant Agent (Microsoft Agent Framework)
 
 **Purpose**: Safe recipe generation with allergen awareness and nutritional information.
 
@@ -235,38 +313,88 @@ def sync_wrapper(async_func):
 This playground demonstrates:
 
 1. **Agent Design Patterns**: Multi-agent delegation, tool integration, safety workflows, approval workflows
-2. **Framework Comparison**: Google ADK vs Microsoft Agent Framework approaches
-3. **Protocol Integration**: MCP for extending agent capabilities
-4. **Safety Implementation**: Mandatory user confirmation for sensitive operations
-5. **Long-running Operations**: Pause and resume patterns with human input
-6. **Code Execution**: Using Python execution for mathematical accuracy
-7. **Async Programming**: Bridging async tools with sync frameworks
-8. **Model Selection**: Choosing appropriate models for different tasks
+2. **Session Management**: In-memory and persistent session storage, event compaction, context management, real-time session inspection
+3. **Database Persistence**: SQLite-based session storage with automatic compaction and inspection capabilities ⚠️ **NEEDS INVESTIGATION**
+4. **General Chatbot Development**: Building versatile agents that handle multiple conversation types
+5. **Framework Comparison**: Google ADK vs Microsoft Agent Framework approaches
+6. **Protocol Integration**: MCP for extending agent capabilities
+7. **Safety Implementation**: Mandatory user confirmation for sensitive operations
+8. **Long-running Operations**: Pause and resume patterns with human input
+9. **Code Execution**: Using Python execution for mathematical accuracy
+10. **Async Programming**: Bridging async tools with sync frameworks
+11. **Model Selection**: Choosing appropriate models for different tasks
+12. **Dynamic Agent Behavior**: Switching between general chat and specialized demonstrations
 
-## 🚀 Getting Started
+## 🚀 Quick Start
 
-### Prerequisites
-- Python 3.8+
-- Node.js (for MCP server)
-- GitHub Personal Access Token (for MS Agent Framework)
-- Google ADK credentials (for Google ADK agent)
+1. **Clone and setup**:
+   ```bash
+   git clone <repository-url>
+   cd Agent_Building_Playground
+   python -m venv .venv
+   source .venv/bin/activate
+   pip install google-adk
+   ```
 
-### Running the Agents
+2. **Set API keys**:
+   ```bash
+   export GOOGLE_API_KEY=your_google_ai_key
+   export GITHUB_TOKEN=your_github_token
+   ```
 
-#### Shipping Coordinator (Google ADK)
+3. **Run all Google ADK agents**:
+   ```bash
+   adk web "Google ADK"
+   ```
+   Access at http://127.0.0.1:8000
+
+   **Note**: Database Session Demo Agent is currently not working properly and needs investigation.
+
+## 🏃 Running Individual Agents
+
+##### Shipping Coordinator (Google ADK)
 ```bash
 cd "Google ADK"
 adk run shipping_agent
 ```
 
-#### Currency Agent (Google ADK)
+##### Currency Agent (Google ADK)
 ```bash
 cd "Google ADK"
 # Configure Google ADK credentials
 python agent.py
 ```
 
-#### Cooking Assistant (MS Agent Framework)
+##### Session Management Demo (Google ADK)
+```bash
+cd "Google ADK"
+adk web "Google ADK"  # Select from web UI dropdown
+# OR
+adk run session_demo_agent
+```
+
+##### Database Session Demo (Google ADK)
+```bash
+cd "Google ADK"
+adk web "Google ADK"  # Select from web UI dropdown
+# OR for full persistence features:
+cd "Google ADK/database_session_agent"
+python run_agent.py
+```
+**Note**: ⚠️ Currently not working properly - needs investigation. Requires Google AI API key. Set `GOOGLE_API_KEY` environment variable.
+
+##### Cooking Assistant (MS Agent Framework)
+```bash
+cd "MS Agent Framework"
+# Install dependencies
+pip install -r requirements.txt
+# Set up GitHub token
+export GITHUB_TOKEN=your_github_token
+# Run the agent
+python cooking_agent.py
+# Or run with web UI
+python ui.py
+```
 
 ## 📚 Further Reading
 
